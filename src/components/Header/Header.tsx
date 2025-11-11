@@ -1,9 +1,28 @@
+import { Link, useLocation } from "react-router-dom";
 import styles from "./Header.module.css";
 
 export const Header = () => {
+  const location = useLocation();
   return (
-    <header>
+    <header className={styles.header}>
       <h1 className={styles.title}>Места для путешествий</h1>
+      <div className={styles.container}>
+        <Link to="/" className="logo">
+          🌍 Travel Explorer
+        </Link>
+
+        <nav className="navigation">
+          <Link
+            to="/favorites"
+            className={`nav-link favorites-link ${location.pathname === '/favorites' ? 'active' : ''}`}
+          >
+            Избранное
+            {/* {favoritesCount > 0 && (
+              <span className="favorites-badge">{favoritesCount}</span>
+            )} */}
+          </Link>
+        </nav>
+      </div>
     </header>
   );
 };

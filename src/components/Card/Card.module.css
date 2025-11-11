@@ -7,6 +7,9 @@
     transform 0.2s,
     box-shadow 0.2s;
   width: 25%;
+  display: flex;
+  align-items: stretch;
+  position: relative;
 }
 
 .cardItem:hover {
@@ -23,6 +26,8 @@
 
 .cardContent {
   padding: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .cardTitle {
@@ -37,6 +42,16 @@
   color: #666;
   line-height: 1.4;
   font-size: clamp(0.9rem, 2vw, 1rem);
+  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  overflow: hidden;
+  width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .cardMeta {
@@ -45,6 +60,7 @@
   flex-wrap: wrap;
   font-size: 0.9em;
   font-size: clamp(0.8rem, 1.8vw, 0.9rem);
+  margin-bottom: 10px;
 }
 
 .imagePlaceholder {
@@ -66,6 +82,52 @@
 .imagePlaceholder:hover {
   background: linear-gradient(135deg, #e3e8f0 0%, #b8c4dc 100%);
   color: #495057;
+}
+
+.cardLink {
+  display: block;
+  color: inherit;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+.favorites {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 2;
+}
+.delete {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+}
+.like {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 2;
+}
+.like:hover {
+  background: #ff4757;
+}
+
+.like.liked {
+  color: #ff4757;
+  background: #ff4757;
+}
+.favorites.favorited {
+  color: #ff4757;
+  background: #ff4757;
+}
+
+.like.liked:hover {
+  background: rgba(255, 71, 87, 0.2);
 }
 
 .low {

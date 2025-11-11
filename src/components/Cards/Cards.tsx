@@ -1,44 +1,26 @@
 import styles from './Cards.module.css';
-import { useEffect, useState } from "react";
-import { API_URL } from "../../Constans"
+import { useEffect } from "react";
 import Card from '../Card/Card';
+import { useDispatch, useSelector } from 'react-redux';
+import { addImageError, getCards } from '../Store/Slices/CardsSlice';
 
 
 export const Cards = () => {
-  const [cards, setCards] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  // Храним ID карточек, у которых не загрузились изображения
-  const [imageSrcError, setImageSrcError] = useState(new Set());
+  const dispatch = useDispatch();
+  const { items: cards, isLoading, error, imageSrcError } = useSelector((state) => state.cards);
+  const imageErrorSet = new Set(imageSrcError);
+
 
   const imageErrorHandler = (cardId) => {
-    setImageSrcError((prev) => {
-      const newErrors = new Set(prev);
-      newErrors.add(cardId);
-      return newErrors;
-    });
-  }
-  const getCards = async function () {
-    try {
-      setIsLoading(true)
-      const response = await fetch(`${API_URL}/travel_cards`);
-      if (!response.ok) {
-        throw new Error("Карточки мест для путешествий не загрузились");
-      }
-      const allCards = await response.json();
-      setCards(allCards);
-      console.log('allCards', allCards);
-    } catch (err) {
-      setError(err.message);
-    } finally { setIsLoading(false) }
-  }
-  useEffect(() => { getCards() }, [])
+    dispatch(addImageError(cardId));
+  };
+  useEffect(() => { dispatch(getCards()) }, [dispatch])
   if (isLoading) return <div>Загрузка карточек...</div>
   if (error) return <div>Ошибка:{error}</div>
   return (
     <ul className={styles.cardsList}>
       {cards.map((card) => (
-        <Card card={card} imageErrorHandler={imageErrorHandler} imageSrcError={imageSrcError}></Card>
+        <Card key={card.id} card={card} imageErrorHandler={imageErrorHandler} imageSrcError={imageErrorSet}></Card>
       ))}
     </ul>
   )

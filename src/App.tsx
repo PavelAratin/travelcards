@@ -1,12 +1,23 @@
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import { Header } from './components/Header'
 import { HomePage } from './Pages/HomePage'
+import { FavoritesPage } from './Pages/FavoritesPage'
+import { DetailPage } from './Pages/DetailPage'
 
 function App() {
 
   return (
     <>
-      <Header></Header>
-      <HomePage></HomePage>
+      <Router>
+        <Header></Header>
+        <main>
+          <Routes>
+            <Route path='/' element={<HomePage></HomePage>}></Route>
+            <Route path='/favorites' element={<FavoritesPage></FavoritesPage>}></Route>
+            <Route path='product/:id' element={<DetailPage></DetailPage>}></Route>
+          </Routes>
+        </main>
+      </Router>
     </>
   )
 }
