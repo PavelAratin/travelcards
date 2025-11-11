@@ -12,15 +12,7 @@ export const Header = () => {
         </Link>
 
         <nav className="navigation">
-          <Link
-            to="/favorites"
-            className={`nav-link favorites-link ${location.pathname === '/favorites' ? 'active' : ''}`}
-          >
-            Избранное
-            {/* {favoritesCount > 0 && (
-              <span className="favorites-badge">{favoritesCount}</span>
-            )} */}
-          </Link>
+          <Link to="/create">Создать карточку</Link>
         </nav>
       </div>
     </header>

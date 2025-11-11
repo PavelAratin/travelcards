@@ -9,6 +9,9 @@
   margin: 0 auto;
   padding: 10px 0;
 }
+.emptyMessage {
+  text-align: center;
+}
 
 @media (max-width: 768px) {
   .cardsList {

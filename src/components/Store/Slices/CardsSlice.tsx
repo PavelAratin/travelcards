@@ -23,6 +23,7 @@ const cardsSlice = createSlice({
     imageSrcError: [],
     favorites: [],
     likes: [],
+    currentFilter: 'all'
   },
   reducers: {
     addImageError: (state, action) => {
@@ -36,6 +37,11 @@ const cardsSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    addCard: (state, action) => {
+      console.log('Добавляем карточку:', action.payload);
+      state.items.push(action.payload);
+      console.log('Теперь карточек:', state.items.length);
     },
     deleteCard: (state, action) => {
       const cardId = action.payload;
@@ -58,7 +64,10 @@ const cardsSlice = createSlice({
       } else {
         state.likes.push(cardId);
       }
-    }
+    },
+    setFilter: (state, action) => {
+      state.currentFilter = action.payload; // 'all' или 'favorites'
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -80,7 +89,7 @@ const cardsSlice = createSlice({
 });
 
 // Экспортируем actions
-export const { addImageError, clearImageErrors, clearError, deleteCard, toggleFavorites, toggleLike } = cardsSlice.actions;
+export const { addImageError, clearImageErrors, clearError, deleteCard, toggleFavorites, toggleLike, setFilter, addCard } = cardsSlice.actions;
 
 // Экспортируем редюсер
 export default cardsSlice.reducer;
