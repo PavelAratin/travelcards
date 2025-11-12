@@ -1,36 +1,52 @@
 import { useState } from 'react';
+import type { ChangeEvent, FormEvent } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { addCard } from '../../components/Store/Slices/CardsSlice';
 import styles from './CreateCardPage.module.css';
+import type { AppDispatch } from '../../components/Store';
 
-// Pages/CreateCardPage.jsx
+interface FormData {
+  destination: string;
+  category: string;
+  continent: string;
+  short_description: string;
+  image_url: string;
+  budget_level: string;
+  priority: string;
+}
+
+interface Errors {
+  destination?: string;
+  category?: string;
+  continent?: string;
+  short_description?: string;
+  image_url?: string;
+}
+
 export const CreateCardPage = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  // Состояние формы - ДОБАВЛЯЕМ image_url
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     destination: '',
     category: '',
     continent: '',
     short_description: '',
-    image_url: '', // НОВОЕ ПОЛЕ
+    image_url: '',
     budget_level: 'middle',
     priority: '3'
   });
 
-  // Состояние ошибок - ДОБАВЛЯЕМ image_url
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<Errors>({});
 
-  // Обработчик изменений в форме (остается без изменений)
-  const handleChange = (e) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
-    if (errors[name]) {
+    if (errors[name as keyof Errors]) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
@@ -38,9 +54,17 @@ export const CreateCardPage = () => {
     }
   };
 
-  // Обновляем валидацию - ДОБАВЛЯЕМ ПРОВЕРКУ ССЫЛКИ
-  const validateForm = () => {
-    const newErrors = {};
+  const isValidUrl = (string: string): boolean => {
+    try {
+      new URL(string);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Errors = {};
 
     if (!formData.destination.trim()) {
       newErrors.destination = 'Название обязательно';
@@ -60,7 +84,6 @@ export const CreateCardPage = () => {
       newErrors.short_description = 'Описание должно быть не менее 10 символов';
     }
 
-    // НОВАЯ ВАЛИДАЦИЯ ДЛЯ ССЫЛКИ НА КАРТИНКУ
     if (!formData.image_url.trim()) {
       newErrors.image_url = 'Ссылка на картинку обязательна';
     } else if (!isValidUrl(formData.image_url)) {
@@ -71,39 +94,23 @@ export const CreateCardPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // ФУНКЦИЯ ДЛЯ ПРОВЕРКИ ССЫЛКИ
-  const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  };
-
-  // Обработчик отправки формы - УБИРАЕМ ДЕФОЛТНУЮ КАРТИНКУ
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (validateForm()) {
-      // Создаем новую карточку - ИСПОЛЬЗУЕМ ВВЕДЕННУЮ ССЫЛКУ
       const newCard = {
         id: Date.now().toString(),
         ...formData,
         detailed_description: formData.short_description,
         best_time_to_visit: 'круглый год',
-        // image_url: formData.image_url, // УЖЕ В formData
         must_see: ['Достопримечательности'],
         activities: ['Экскурсии'],
         completed: false,
         tags: [formData.category],
-        priority: parseInt(formData.priority) // преобразуем в число
+        priority: formData.priority
       };
 
-      // Добавляем в Redux
       dispatch(addCard(newCard));
-
-      // Переходим на главную страницу
       navigate('/');
     }
   };
@@ -149,7 +156,6 @@ export const CreateCardPage = () => {
           {errors.continent && <span className={styles.errorText}>{errors.continent}</span>}
         </div>
 
-        {/* НОВОЕ ПОЛЕ ДЛЯ ССЫЛКИ НА КАРТИНКУ */}
         <div className={styles.formGroup}>
           <label>Ссылка на картинку *</label>
           <input
@@ -172,7 +178,7 @@ export const CreateCardPage = () => {
             name="short_description"
             value={formData.short_description}
             onChange={handleChange}
-            rows="3"
+            rows={3}
             className={errors.short_description ? styles.error : ''}
           />
           {errors.short_description && <span className={styles.errorText}>{errors.short_description}</span>}

@@ -8,26 +8,49 @@ import { Delete } from '../UI/Icons/Delete';
 import styles from './Card.module.css';
 import { Like } from '../UI/Icons/Like';
 
-const Card = ({ card, imageErrorHandler, imageSrcError }) => {
+interface CardType {
+  id: string;
+  image_url: string;
+  destination: string;
+  short_description: string;
+  continent: string;
+  budget_level: string;
+  priority: string;
+}
+
+interface CardProps {
+  card: CardType;
+  imageErrorHandler: (id: string) => void;
+  imageSrcError: Set<string>;
+}
+
+interface RootState {
+  cards: {
+    likes: string[];
+    favorites: string[];
+  };
+}
+
+const Card = ({ card, imageErrorHandler, imageSrcError }: CardProps) => {
   const dispatch = useDispatch();
-  const likes = useSelector(state => state.cards.likes);
-  const favorites = useSelector(state => state.cards.favorites);
+  const likes = useSelector((state: RootState) => state.cards.likes);
+  const favorites = useSelector((state: RootState) => state.cards.favorites);
   const isLiked = likes.includes(card.id);
   const isFavorite = favorites.includes(card.id);
+
   const likeHandler = () => {
     dispatch(toggleLike(card.id));
   };
 
-  const deleteCardHandler = (cardId) => {
-    dispatch(deleteCard(cardId))
+  const deleteCardHandler = () => {
+    dispatch(deleteCard(card.id))
   }
 
-  const toggleFavoritesHandler = (cardId) => {
-    dispatch(toggleFavorites(cardId))
+  const toggleFavoritesHandler = () => {
+    dispatch(toggleFavorites(card.id))
   }
 
   const showImage = imageSrcError.has(card.id);
-
 
   return (
     <li key={card.id} className={styles.cardItem}>
@@ -54,12 +77,11 @@ const Card = ({ card, imageErrorHandler, imageSrcError }) => {
       </div>
       <Link className={styles.cardLink} to={`/product/${card.id}`}>
       </Link>
-      <Button clickHandler={toggleFavoritesHandler} cardId={card.id} title={isFavorite ? "Убрать из избранного" : "Добавить в избранное"} className={`${styles.favorites} ${isFavorite ? styles.favorited : ''}`}><Favorites></Favorites></Button>
-      <Button clickHandler={deleteCardHandler} cardId={card.id} title="Удалить карточку" className={styles.delete}><Delete></Delete></Button>
-      <Button clickHandler={likeHandler} cardId={card.id} title={isLiked ? "Убрать лайк" : "Поставить лайк"} className={`${styles.like} ${isLiked ? styles.liked : ''}`}><Like></Like></Button>
+      <Button clickHandler={toggleFavoritesHandler} title={isFavorite ? "Убрать из избранного" : "Добавить в избранное"} className={`${styles.favorites} ${isFavorite ? styles.favorited : ''}`}><Favorites></Favorites></Button>
+      <Button clickHandler={deleteCardHandler} title="Удалить карточку" className={styles.delete}><Delete></Delete></Button>
+      <Button clickHandler={likeHandler} title={isLiked ? "Убрать лайк" : "Поставить лайк"} className={`${styles.like} ${isLiked ? styles.liked : ''}`}><Like></Like></Button>
     </li>
   )
 }
-
 
 export default Card;

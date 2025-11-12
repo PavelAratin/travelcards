@@ -3,17 +3,17 @@ import { useEffect } from "react";
 import Card from '../Card/Card';
 import { useDispatch, useSelector } from 'react-redux';
 import { addImageError, getCards } from '../Store/Slices/CardsSlice';
-
+import type { AppDispatch, RootState } from '../Store';
 
 export const Cards = () => {
-  const dispatch = useDispatch();
-  const { items: cards, isLoading, error, imageSrcError, favorites, currentFilter } = useSelector((state) => state.cards);
+  const dispatch = useDispatch<AppDispatch>();
+  const { items: cards, isLoading, error, imageSrcError, favorites, currentFilter } = useSelector((state: RootState) => state.cards);
   const imageErrorSet = new Set(imageSrcError);
 
-
-  const imageErrorHandler = (cardId) => {
+  const imageErrorHandler = (cardId: string) => {
     dispatch(addImageError(cardId));
   };
+
   useEffect(() => {
     if (cards.length === 0) {
       dispatch(getCards());
@@ -30,6 +30,7 @@ export const Cards = () => {
   console.log('Все карточки в Redux:', cards);
   console.log('Текущий фильтр:', currentFilter);
   console.log('Избранные ID:', favorites);
+
   return (
     <>
       <ul className={styles.cardsList}>
@@ -55,6 +56,5 @@ export const Cards = () => {
         </div>
       )}
     </>
-
   )
 }

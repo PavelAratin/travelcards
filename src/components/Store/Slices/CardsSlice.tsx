@@ -1,5 +1,43 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 import { API_URL } from "../../../Constans";
+
+interface CardType {
+  id: string;
+  image_url: string;
+  destination: string;
+  short_description: string;
+  continent: string;
+  budget_level: string;
+  priority: string;
+  category: string; // добавляем это поле
+  detailed_description?: string;
+  best_time_to_visit?: string;
+  must_see?: string[];
+  activities?: string[];
+  completed?: boolean;
+  tags?: string[];
+}
+
+interface CardsState {
+  items: CardType[];
+  isLoading: boolean;
+  error: string | null;
+  imageSrcError: string[];
+  favorites: string[];
+  likes: string[];
+  currentFilter: string;
+}
+
+const initialState: CardsState = {
+  items: [],
+  isLoading: false,
+  error: null,
+  imageSrcError: [],
+  favorites: [],
+  likes: [],
+  currentFilter: 'all'
+};
 
 export const getCards = createAsyncThunk('cards/getCards', async (_, { rejectWithValue }) => {
   try {
@@ -10,23 +48,18 @@ export const getCards = createAsyncThunk('cards/getCards', async (_, { rejectWit
     const data = await response.json();
     return data;
   } catch (error) {
-    return rejectWithValue(error.message);
+    if (error instanceof Error) {
+      return rejectWithValue(error.message);
+    }
+    return rejectWithValue('Неизвестная ошибка');
   }
 });
 
 const cardsSlice = createSlice({
   name: 'cards',
-  initialState: {
-    items: [],
-    isLoading: false,
-    error: null,
-    imageSrcError: [],
-    favorites: [],
-    likes: [],
-    currentFilter: 'all'
-  },
+  initialState,
   reducers: {
-    addImageError: (state, action) => {
+    addImageError: (state, action: PayloadAction<string>) => {
       const cardId = action.payload;
       if (!state.imageSrcError.includes(cardId)) {
         state.imageSrcError.push(cardId);
@@ -38,16 +71,14 @@ const cardsSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    addCard: (state, action) => {
-      console.log('Добавляем карточку:', action.payload);
+    addCard: (state, action: PayloadAction<CardType>) => {
       state.items.push(action.payload);
-      console.log('Теперь карточек:', state.items.length);
     },
-    deleteCard: (state, action) => {
+    deleteCard: (state, action: PayloadAction<string>) => {
       const cardId = action.payload;
       state.items = state.items.filter((card) => card.id !== cardId)
     },
-    toggleFavorites: (state, action) => {
+    toggleFavorites: (state, action: PayloadAction<string>) => {
       const cardId = action.payload;
       const isFavorite = state.favorites.includes(cardId)
       if (isFavorite) {
@@ -56,7 +87,7 @@ const cardsSlice = createSlice({
         state.favorites.push(cardId);
       }
     },
-    toggleLike: (state, action) => {
+    toggleLike: (state, action: PayloadAction<string>) => {
       const cardId = action.payload;
       const isLike = state.likes.includes(cardId)
       if (isLike) {
@@ -65,8 +96,8 @@ const cardsSlice = createSlice({
         state.likes.push(cardId);
       }
     },
-    setFilter: (state, action) => {
-      state.currentFilter = action.payload; // 'all' или 'favorites'
+    setFilter: (state, action: PayloadAction<string>) => {
+      state.currentFilter = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -75,21 +106,18 @@ const cardsSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(getCards.fulfilled, (state, action) => {
+      .addCase(getCards.fulfilled, (state, action: PayloadAction<CardType[]>) => {
         state.isLoading = false;
         state.items = action.payload;
         state.error = null;
       })
       .addCase(getCards.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload;
+        state.error = action.payload as string;
         state.items = [];
       });
   },
 });
 
-// Экспортируем actions
 export const { addImageError, clearImageErrors, clearError, deleteCard, toggleFavorites, toggleLike, setFilter, addCard } = cardsSlice.actions;
-
-// Экспортируем редюсер
 export default cardsSlice.reducer;

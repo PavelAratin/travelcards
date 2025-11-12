@@ -1,16 +1,17 @@
 import styles from './Button.module.css';
 
-export const Button = ({ clickHandler, cardId, children, title, className = "" }) => {
-  const handleClick = () => {
-    if (cardId) {
-      clickHandler(cardId);
-    } else {
-      clickHandler();
-    }
-  };
+interface ButtonProps {
+  clickHandler: () => void;
+  cardId?: string;
+  children: React.ReactNode;
+  title: string;
+  className?: string;
+}
 
-
+export const Button = ({ clickHandler, children, title, className = "" }: ButtonProps) => {
   return (
-    <button className={`${styles.button} ${className}`} onClick={handleClick} title={title}>{children}</button>
+    <button className={`${styles.button} ${className}`} onClick={clickHandler} title={title}>
+      {children}
+    </button>
   )
 }
