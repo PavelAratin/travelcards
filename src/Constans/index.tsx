@@ -1,1 +1,0 @@
-export const API_URL: string = import.meta.env.VITE_SERVER_CARDS_URL;
